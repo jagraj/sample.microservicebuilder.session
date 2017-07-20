@@ -1,7 +1,9 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: microservice-session-sample
+  name: {{ template "fullname" . }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 spec:
   replicas: 1
   template:
@@ -11,11 +13,12 @@ spec:
     spec:
       containers:
       - name: microservice-session
-        image: microservice-session:latest
+        image: {{ default "microservice-session:latest" .Values.image }}
         ports:
           - containerPort: 9080
         imagePullPolicy: IfNotPresent
         env:
+{{ if ne .Values.test true }}         
           - name: MB_KEYSTORE_PASSWORD
             valueFrom:
               secretKeyRef:
@@ -26,26 +29,30 @@ spec:
               secretKeyRef:
                 name: mb-truststore-password
                 key: password
+{{ end }}
         volumeMounts:
+{{ if ne .Values.test true }}         
         - name: keystore
           mountPath: /etc/wlp/config/keystore
         - name: truststore
           mountPath: /etc/wlp/config/truststore
         - name: liberty-config
           mountPath: /config/configDropins
+{{ end }}        
         readinessProbe:
           httpGet:
             path: /sessions/nessProbe
             port: 9080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+{{ if ne .Values.test true}} 
       volumes:
       - name: keystore
         secret:
           secretName: mb-keystore
-        
       - name: truststore
         secret:
           secretName: mb-truststore
-        
       - name: liberty-config
         configMap:
           name: liberty-logging-config
@@ -54,7 +61,7 @@ spec:
               path: defaults/keystore.xml
             - key: logging.xml
               path: defaults/logging.xml
-          optional: "true"
+{{ end }}
 ---
 apiVersion: v1
 kind: Service

@@ -53,7 +53,10 @@ public class SessionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Session createSession(final Session session) throws Exception {
-        return sessionStore.save(session);
+        System.out.println ("createSession called for " + session.toString());
+        Session result = sessionStore.save(session);
+        System.out.println ("createSession returning " + result.toString());
+        return result;
     }
 
     // For use as a k8s readinessProbe for this service

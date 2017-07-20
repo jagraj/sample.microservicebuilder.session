@@ -26,6 +26,39 @@
     <packaging>war</packaging>
     <name>Conference :: Session</name>
 
+    <profiles>
+      <profile>
+        <!-- Developer profile: `mvn -P dev` 
+             Ensure that JAVA_HOME is set. Currently IBM Java 8 JDKs do not work with Arquillian Cube Kuberenetes: SSL errors. 
+             Note that we set 'namespace.use.existing' to 'default' because 
+             https://github.com/arquillian/arquillian-cube/pull/703
+             does not work for minikube on Windows 10. Mac users may be able to delete that entry. 
+             
+             If you don't want to say -P dev, you can set the systemPropertyVariables as environment variables instead:
+             
+               export ENV_INIT_ENABLED=false 
+               export NAMESPACE_USE_EXISTING=default
+               mvn verify
+        -->
+        <id>dev</id>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-failsafe-plugin</artifactId>
+              <configuration>
+                <systemPropertyVariables>
+                  <arquillian.debug>true</arquillian.debug>
+                  <env.init.enabled>false</env.init.enabled>
+                  <namespace.use.existing>default</namespace.use.existing>
+                </systemPropertyVariables>
+              </configuration>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+    </profiles>
+
     <repositories>
       <repository>
         <id>jitpack.io</id>
@@ -51,22 +84,27 @@
           </plugin>
 
           <plugin>
-            <groupId>io.fabric8</groupId>
-            <artifactId>docker-maven-plugin</artifactId>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>2.19.1</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                </goals>
+              </execution>
+              <execution>
+              <id>verify-results</id>
+                <goals>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
             <configuration>
-              <images>
-                <image>
-                  <name>microservice-session</name>
-                  <build>
-                    <dockerFileDir>artifacts</dockerFileDir>
-                    <assembly>
-                      <descriptorRef>artifact</descriptorRef>
-                    </assembly>
-                  </build>
-                </image>
-              </images>
+              <redirectTestOutputToFile>true</redirectTestOutputToFile>
             </configuration>
           </plugin>
+
       </plugins>
     </build>
 
@@ -98,5 +136,48 @@
             <scope>provided</scope>
             <version>2016.10.0</version>
         </dependency>
+
+        <!-- Dependencies for Arquillian Cube failsafe tests -->
+        <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>4.12</version>
+          <scope>test</scope>
+      	</dependency>
+
+        <dependency>
+          <groupId>org.jboss.arquillian.junit</groupId>
+          <artifactId>arquillian-junit-standalone</artifactId>
+          <version>1.1.13.Final</version>
+          <scope>test</scope>
+        </dependency> 
+        <dependency>
+          <groupId>org.arquillian.cube</groupId>
+          <artifactId>arquillian-cube-requirement</artifactId>
+          <version>1.7.1</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.arquillian.cube</groupId>
+          <artifactId>arquillian-cube-kubernetes</artifactId>
+          <version>1.7.1</version>
+          <scope>test</scope>
+        </dependency>
+
+        <dependency>
+          <groupId>io.fabric8</groupId>
+          <artifactId>kubernetes-openshift-uberjar</artifactId>
+          <version>2.5.7</version>
+        </dependency>
+
+        <!-- JAX-RS client does not work properly on kube across namespaces, but if you can get past that: 
+        <dependency>
+          <groupId>org.apache.cxf</groupId>
+          <artifactId>cxf-rt-rs-client</artifactId>
+          <version>3.1.12</version>
+          <scope>test</scope>
+        </dependency>
+        -->
+
     </dependencies>
 </project>
