@@ -1,2 +1,6 @@
 target/**
 .kube
+.vscode
+.project
+.settings
+.classpath
