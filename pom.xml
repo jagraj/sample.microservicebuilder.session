@@ -29,7 +29,7 @@
     <profiles>
       <profile>
         <!-- Developer profile: `mvn -P dev` 
-             Ensure that JAVA_HOME is set. Currently IBM Java 8 JDKs do not work with Arquillian Cube Kuberenetes: SSL errors. 
+             Ensure that JAVA_HOME is set. Currently IBM Java 8 JDKs do not work with Arquillian Cube Kubernetes: SSL errors. 
              Note that we set 'namespace.use.existing' to 'default' because 
              https://github.com/arquillian/arquillian-cube/pull/703
              does not work for minikube on Windows 10. Mac users may be able to delete that entry. 
