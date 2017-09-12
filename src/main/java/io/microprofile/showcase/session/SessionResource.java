@@ -31,6 +31,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+import org.eclipse.microprofile.metrics.annotation.Counted;
+
 
 /**
  * @author Ken Finnigan
@@ -45,6 +47,7 @@ public class SessionResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Counted(monotonic = true)
     public Collection<Session> allSessions() throws Exception {
         return sessionStore.getSessions();
     }
@@ -52,6 +55,7 @@ public class SessionResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Counted(monotonic = true)
     public Session createSession(final Session session) throws Exception {
         System.out.println ("createSession called for " + session.toString());
         Session result = sessionStore.save(session);
@@ -71,6 +75,7 @@ public class SessionResource {
     @GET
     @Path("/{sessionId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Counted(monotonic = true)
     public Response retrieveSession(@PathParam("sessionId") final String sessionId) throws Exception {
         final Optional<Session> result = sessionStore.find(sessionId);
 
@@ -85,6 +90,7 @@ public class SessionResource {
     @Path("/{sessionId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Counted(monotonic = true)
     public Response updateSession(@PathParam("sessionId") final String sessionId, final Session session) throws Exception {
         final Optional<Session> updated = sessionStore.update(sessionId, session);
         if (updated.isPresent())
@@ -95,6 +101,7 @@ public class SessionResource {
 
     @DELETE
     @Path("/{sessionId}")
+    @Counted(monotonic = true)
     public Response deleteSession(@PathParam("sessionId") final String sessionId) throws Exception {
         final Optional<Session> removed = sessionStore.remove(sessionId);
         if (removed.isPresent())
@@ -109,6 +116,7 @@ public class SessionResource {
     @GET
     @Path("/{sessionId}/speakers")
     @Produces(MediaType.APPLICATION_JSON)
+    @Counted(monotonic = true)
     public Response sessionSpeakers(@PathParam("sessionId") final String sessionId) throws Exception {
 
         final Optional<Session> session = sessionStore.getSessions().stream()
@@ -125,6 +133,7 @@ public class SessionResource {
     @PUT
     @Path("/{sessionId}/speakers/{speakerId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Counted(monotonic = true)
     public Response addSessionSpeaker(@PathParam("sessionId") final String sessionId, @PathParam("speakerId") final String speakerId) throws Exception {
 
         final Optional<Session> result = sessionStore.find(sessionId);
@@ -142,6 +151,7 @@ public class SessionResource {
 
     @DELETE
     @Path("/{sessionId}/speakers/{speakerId}")
+    @Counted(monotonic = true)
     public Response removeSessionSpeaker(@PathParam("sessionId") final String sessionId, @PathParam("speakerId") final String speakerId) throws Exception {
         final Optional<Session> result = sessionStore.find(sessionId);
 
