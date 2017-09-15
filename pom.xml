@@ -181,7 +181,13 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
-
+		<dependency>
+            <groupId>net.wasdev.wlp.starters.ms-builder</groupId>
+            <artifactId>health</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
         <!-- JAX-RS client does not work properly on kube across namespaces, but if you can get past that: 
         <dependency>
           <groupId>org.apache.cxf</groupId>
