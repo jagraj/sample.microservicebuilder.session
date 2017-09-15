@@ -15,6 +15,11 @@
  */
 package io.microprofile.showcase.session;
 
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -27,11 +32,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
+
 import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.Metered;
 
 
 /**
@@ -40,6 +43,7 @@ import org.eclipse.microprofile.metrics.annotation.Counted;
  */
 @Path("sessions")
 @ApplicationScoped
+@Metered(name="io.microprofile.showcase.session.SessionResource.Type.Metered")
 public class SessionResource {
 
     @Inject

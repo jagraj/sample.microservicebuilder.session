@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.Metered;
 
 import io.microprofile.showcase.bootstrap.BootstrapData;
 import io.microprofile.showcase.bootstrap.SessionFactory;
@@ -23,6 +24,7 @@ import io.microprofile.showcase.bootstrap.SessionFactory;
  * @since 16/09/16
  */
 @ApplicationScoped
+@Metered(name="io.microprofile.showcase.session.SessionStore.Type.Metered")
 public class SessionStore {
 
     @Inject
