@@ -24,7 +24,7 @@ import io.microprofile.showcase.bootstrap.SessionFactory;
  * @since 16/09/16
  */
 @ApplicationScoped
-@Metered(name="io.microprofile.showcase.session.SessionStore.Type.Metered")
+@Metered(name="io.microprofile.showcase.session.SessionStore.Type.Metered",tags="app=session")
 public class SessionStore {
 
     @Inject
@@ -56,7 +56,7 @@ public class SessionStore {
 
 }
     
-    @Counted(monotonic = true)
+    @Counted(monotonic = true,tags="app=session")
     public Collection<Session> getSessions() {
         return storage.values();
     }
