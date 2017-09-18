@@ -20,6 +20,10 @@ spec:
           - containerPort: 9080
         imagePullPolicy: IfNotPresent
         env:
+          - name: USERNAME
+            value: admin
+          - name: PASSWORD
+            value: password
 {{ if ne .Values.test true }}         
           - name: MB_KEYSTORE_PASSWORD
             valueFrom:
@@ -47,6 +51,12 @@ spec:
             port: 9080
           initialDelaySeconds: 10
           periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 9080
+          initialDelaySeconds: 120
+          periodSeconds: 15
 {{ if ne .Values.test true}} 
       volumes:
       - name: keystore

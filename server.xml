@@ -1,16 +1,17 @@
 <server description="microservice-session">
 
-    <!-- Enable features -->
-    <featureManager>
-      <feature>microProfile-1.0</feature>
-      <feature>mpMetrics-1.0</feature>
-    </featureManager>
+  <!-- Enable features -->
+  <featureManager>
+    <feature>microProfile-1.2</feature>
+  </featureManager>
 
-    <httpEndpoint id="defaultHttpEndpoint"
+  <httpEndpoint id="defaultHttpEndpoint"
         host="*"
         httpPort="9080"
         httpsPort="9443" />
 
-    <webApplication location="session.war" contextRoot="/"/>
+  <quickStartSecurity userName="${env.USERNAME}" userPassword="${env.PASSWORD}"/>
+
+  <webApplication location="session.war" contextRoot="/"/>
 
 </server>
