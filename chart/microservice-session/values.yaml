@@ -1,1 +1,4 @@
+image:
+  repository: "microservice-session"
+  tag: "latest"
 test: false
