@@ -15,6 +15,8 @@
  */
 package io.microprofile.showcase.session;
 
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Objects;
@@ -30,11 +32,15 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
+
+import io.microprofile.showcase.session.health.HealthCheckBean;
+
 
 
 /**
@@ -48,6 +54,7 @@ public class SessionResource {
 
     @Inject
     private SessionStore sessionStore;
+	@Inject HealthCheckBean healthCheckBean;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -170,5 +177,14 @@ public class SessionResource {
         return Response.status(404).build();
     }
 
+    @POST
+    @Path("/updateHealthStatus")
+    @Produces(TEXT_PLAIN)
+    @Consumes(TEXT_PLAIN)
+    @Counted(name="io.microprofile.showcase.session.SessionResource.updateHealthStatus.monotonic.absolute(true)",monotonic=true,absolute=true,tags="app=vote")
+    public void updateHealthStatus(@QueryParam("isAppDown") Boolean isAppDown) {
+    	healthCheckBean.setIsAppDown(isAppDown);
+    }
+    
 
 }
