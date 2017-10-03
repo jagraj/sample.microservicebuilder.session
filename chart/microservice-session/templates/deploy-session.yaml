@@ -23,7 +23,7 @@ spec:
           - containerPort: 9080
         imagePullPolicy: IfNotPresent
         env:
-{{ if ne .Values.test true }}         
+{{ if ne .Values.test true }}
           - name: MB_KEYSTORE_PASSWORD
             valueFrom:
               secretKeyRef:
@@ -36,21 +36,21 @@ spec:
                 key: password
 {{ end }}
         volumeMounts:
-{{ if ne .Values.test true }}         
+{{ if ne .Values.test true }}
         - name: keystore
           mountPath: /etc/wlp/config/keystore
         - name: truststore
           mountPath: /etc/wlp/config/truststore
         - name: liberty-config
           mountPath: /config/configDropins
-{{ end }}        
+{{ end }}
         readinessProbe:
           httpGet:
             path: /sessions/nessProbe
             port: 9080
           initialDelaySeconds: 10
           periodSeconds: 5
-{{ if ne .Values.test true}} 
+{{ if ne .Values.test true}}
       volumes:
       - name: keystore
         secret:
@@ -66,6 +66,7 @@ spec:
               path: defaults/keystore.xml
             - key: logging.xml
               path: defaults/logging.xml
+          optional: true
 {{ end }}
 ---
 apiVersion: v1
