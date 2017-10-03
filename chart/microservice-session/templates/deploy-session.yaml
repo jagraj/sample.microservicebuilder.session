@@ -5,7 +5,12 @@ metadata:
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 spec:
-  replicas: 1
+  replicas: 1  
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   template:
     metadata:
       labels:
@@ -42,14 +47,14 @@ spec:
                 key: password
 {{ end }}
         volumeMounts:
-{{ if ne .Values.test true }}         
+{{ if ne .Values.test true }}
         - name: keystore
           mountPath: /etc/wlp/config/keystore
         - name: truststore
           mountPath: /etc/wlp/config/truststore
         - name: liberty-config
           mountPath: /config/configDropins
-{{ end }}        
+{{ end }}
         readinessProbe:
           httpGet:
             path: /sessions/nessProbe
@@ -78,6 +83,7 @@ spec:
               path: defaults/keystore.xml
             - key: logging.xml
               path: defaults/logging.xml
+          optional: true
 {{ end }}
 ---
 apiVersion: v1
