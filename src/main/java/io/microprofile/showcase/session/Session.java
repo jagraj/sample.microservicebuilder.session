@@ -41,6 +41,13 @@ public class Session {
         this.underlying = underlying;
     }
 
+    public Session(){}
+
+    public String toString() { 
+        return "Session id " + id + " " + getAbstract() + " " + getSpeakers().toString();
+
+    }
+
     @JsonIgnore
     JsonObject getUnderlying() {
         return underlying;

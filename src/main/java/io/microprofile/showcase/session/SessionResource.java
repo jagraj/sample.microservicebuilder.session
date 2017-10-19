@@ -15,6 +15,13 @@
  */
 package io.microprofile.showcase.session;
 
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -25,12 +32,16 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
+
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.Metered;
+
+import io.microprofile.showcase.session.health.HealthCheckBean;
+
+
 
 /**
  * @author Ken Finnigan
@@ -38,13 +49,16 @@ import java.util.Optional;
  */
 @Path("sessions")
 @ApplicationScoped
+@Metered(name="io.microprofile.showcase.session.SessionResource.Type.Metered",tags="app=session")
 public class SessionResource {
 
     @Inject
     private SessionStore sessionStore;
+	@Inject HealthCheckBean healthCheckBean;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Counted(monotonic = true,tags="app=session")
     public Collection<Session> allSessions() throws Exception {
         return sessionStore.getSessions();
     }
@@ -52,8 +66,12 @@ public class SessionResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Counted(monotonic = true,tags="app=session")
     public Session createSession(final Session session) throws Exception {
-        return sessionStore.save(session);
+        System.out.println ("createSession called for " + session.toString());
+        Session result = sessionStore.save(session);
+        System.out.println ("createSession returning " + result.toString());
+        return result;
     }
 
     // For use as a k8s readinessProbe for this service
@@ -68,6 +86,7 @@ public class SessionResource {
     @GET
     @Path("/{sessionId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Counted(monotonic = true,tags="app=session")
     public Response retrieveSession(@PathParam("sessionId") final String sessionId) throws Exception {
         final Optional<Session> result = sessionStore.find(sessionId);
 
@@ -82,6 +101,7 @@ public class SessionResource {
     @Path("/{sessionId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Counted(monotonic = true,tags="app=session")
     public Response updateSession(@PathParam("sessionId") final String sessionId, final Session session) throws Exception {
         final Optional<Session> updated = sessionStore.update(sessionId, session);
         if (updated.isPresent())
@@ -92,6 +112,7 @@ public class SessionResource {
 
     @DELETE
     @Path("/{sessionId}")
+    @Counted(monotonic = true,tags="app=session")
     public Response deleteSession(@PathParam("sessionId") final String sessionId) throws Exception {
         final Optional<Session> removed = sessionStore.remove(sessionId);
         if (removed.isPresent())
@@ -106,6 +127,7 @@ public class SessionResource {
     @GET
     @Path("/{sessionId}/speakers")
     @Produces(MediaType.APPLICATION_JSON)
+    @Counted(monotonic = true,tags="app=session")
     public Response sessionSpeakers(@PathParam("sessionId") final String sessionId) throws Exception {
 
         final Optional<Session> session = sessionStore.getSessions().stream()
@@ -122,6 +144,7 @@ public class SessionResource {
     @PUT
     @Path("/{sessionId}/speakers/{speakerId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Counted(monotonic = true,tags="app=session")
     public Response addSessionSpeaker(@PathParam("sessionId") final String sessionId, @PathParam("speakerId") final String speakerId) throws Exception {
 
         final Optional<Session> result = sessionStore.find(sessionId);
@@ -139,6 +162,7 @@ public class SessionResource {
 
     @DELETE
     @Path("/{sessionId}/speakers/{speakerId}")
+    @Counted(monotonic = true,tags="app=session")
     public Response removeSessionSpeaker(@PathParam("sessionId") final String sessionId, @PathParam("speakerId") final String speakerId) throws Exception {
         final Optional<Session> result = sessionStore.find(sessionId);
 
@@ -153,5 +177,14 @@ public class SessionResource {
         return Response.status(404).build();
     }
 
+    @POST
+    @Path("/updateHealthStatus")
+    @Produces(TEXT_PLAIN)
+    @Consumes(TEXT_PLAIN)
+    @Counted(name="io.microprofile.showcase.session.SessionResource.updateHealthStatus.monotonic.absolute(true)",monotonic=true,absolute=true,tags="app=vote")
+    public void updateHealthStatus(@QueryParam("isAppDown") Boolean isAppDown) {
+    	healthCheckBean.setIsAppDown(isAppDown);
+    }
+    
 
 }
