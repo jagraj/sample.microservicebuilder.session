@@ -101,6 +101,7 @@
           </execution>
         </executions>
         <configuration>
+          <argLine>-Dcom.ibm.jsse2.overrideDefaultTLS=true</argLine>
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
         </configuration>
       </plugin>
