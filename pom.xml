@@ -73,8 +73,8 @@
 							<installDirectory>/opt/ibm/wlp</installDirectory>
 							<userDirectory>${project.build.directory}/liberty/wlp/usr</userDirectory>
 							<configFile>${basedir}/server.xml</configFile>
-							<serverEnv>${basedir}/src/main/liberty/config/server.env</serverEnv>
-							<jvmOptionsFile>${basedir}/src/main/liberty/config/jvm.options</jvmOptionsFile>
+							<!-- <serverEnv>${basedir}/src/main/liberty/config/server.env</serverEnv> -->
+							<!--<jvmOptionsFile>${basedir}/src/main/liberty/config/jvm.options</jvmOptionsFile>-->
 							<packageFile>${package.file}</packageFile>
 							<include>${packaging.type}</include>
 							<bootstrapProperties>
